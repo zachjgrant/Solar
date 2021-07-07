@@ -112,35 +112,305 @@ state = [];
 for q in state_raw:
 	if q not in state:
 		state.append(q);
+state = np.transpose(state);
 
 #Combine for all months and create data frame
-H_bar_state_year = np.transpose(np.mean(H_bar_state, axis=1));
-by_state_year = np.stack((state,H_bar_state_year), axis=-1);
-df = pd.DataFrame(data=by_state_year, columns=["State", "Average Daily Radiation"]);
+H_bar_state_year = np.mean(H_bar_state, axis=1);
+d_year = {'State': state, 'Value': H_bar_state_year};
+df_year = pd.DataFrame(data=d_year);
 
-#Plot the US Map
+#Import map and get rid of unneeded parts
 sb.set(style="darkgrid");
 mp = 'cb_2018_us_state_5m.shp';
 US = gpd.read_file(mp);
-#print(US.sample(5));
-US.plot(figsize=(40,20));
-plt.show;
+US = US.drop(index=39);
+US = US.drop(index=46);
+US = US.drop(index=47);
+US = US.drop(index=48);
+US = US.drop(index=49);
+US = US.drop(index=51);
 
 #Merge dataset and dataframe
-merged = US.set_index('STUSPS').join(df.set_index('State'))
-merged = merged.reset_index()
-print(merged.sample(3));
+merged_year = US.set_index('STUSPS').join(df_year.set_index('State'))
+merged_year = merged_year.reset_index();
 
-#Plot the heat map
+#Plot the heat map for daily average for the year
 fig, ax = plt.subplots(1, figsize=(40, 20));
 ax.axis('off');
-ax.set_title('Heat Map of Average Daily Radiation Recieved Per Sq. Meter', fontdict={'fontsize': '40', 'fontweight' : '3'});
-color = 'Oranges';
-vmin, vmax = 8, 20;
+ax.set_title('Heat Map of Yearly Average Daily Radiation Recieved in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_year = df_year['Value'];
+vmin = col_year.min();
+vmax = col_year.max();
 sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
 sm._A = [];
 cbar = fig.colorbar(sm);
-cbar.ax.tick_params(labelsize=20);
-merged.plot('Average Daily Radiation', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,40));
+cbar.ax.tick_params(labelsize=25);
+merged_year.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
 
-#print();		
+#Repeat by monthy daily average for January
+H_bar_state_jan = H_bar_state[:,0];
+d_jan = {'State': state, 'Value': H_bar_state_jan};
+df_jan = pd.DataFrame(data=d_jan);
+
+merged_jan = US.set_index('STUSPS').join(df_jan.set_index('State'))
+merged_jan = merged_jan.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in January in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_jan = df_jan['Value'];
+vmin = col_jan.min();
+vmax = col_jan.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_jan.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for February
+H_bar_state_feb = H_bar_state[:,1];
+d_feb = {'State': state, 'Value': H_bar_state_feb};
+df_feb = pd.DataFrame(data=d_feb);
+
+merged_feb = US.set_index('STUSPS').join(df_feb.set_index('State'))
+merged_feb = merged_feb.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in February in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_feb = df_feb['Value'];
+vmin = col_feb.min();
+vmax = col_feb.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_feb.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for March
+H_bar_state_mar = H_bar_state[:,2];
+d_mar = {'State': state, 'Value': H_bar_state_mar};
+df_mar = pd.DataFrame(data=d_mar);
+
+merged_mar = US.set_index('STUSPS').join(df_mar.set_index('State'))
+merged_mar = merged_mar.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in March in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_mar = df_mar['Value'];
+vmin = col_mar.min();
+vmax = col_mar.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_mar.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for April
+H_bar_state_apr = H_bar_state[:,3];
+d_apr = {'State': state, 'Value': H_bar_state_apr};
+df_apr = pd.DataFrame(data=d_apr);
+
+merged_apr = US.set_index('STUSPS').join(df_apr.set_index('State'))
+merged_apr = merged_apr.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in April in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_apr = df_apr['Value'];
+vmin = col_apr.min();
+vmax = col_apr.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_apr.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for May
+H_bar_state_may = H_bar_state[:,4];
+d_may = {'State': state, 'Value': H_bar_state_may};
+df_may = pd.DataFrame(data=d_may);
+
+merged_may = US.set_index('STUSPS').join(df_may.set_index('State'))
+merged_may = merged_may.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in May in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_may = df_may['Value'];
+vmin = col_may.min();
+vmax = col_may.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_may.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for June
+H_bar_state_jun = H_bar_state[:,5];
+d_jun = {'State': state, 'Value': H_bar_state_jun};
+df_jun = pd.DataFrame(data=d_jun);
+
+merged_jun = US.set_index('STUSPS').join(df_jun.set_index('State'))
+merged_jun = merged_jun.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in June in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_jun = df_jun['Value'];
+vmin = col_jun.min();
+vmax = col_jun.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_jun.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for July
+H_bar_state_jul = H_bar_state[:,6];
+d_jul = {'State': state, 'Value': H_bar_state_jul};
+df_jul = pd.DataFrame(data=d_jul);
+
+merged_jul = US.set_index('STUSPS').join(df_jul.set_index('State'))
+merged_jul = merged_jul.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in July in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_jul = df_jul['Value'];
+vmin = col_jul.min();
+vmax = col_jul.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_jul.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for August
+H_bar_state_aug = H_bar_state[:,7];
+d_aug = {'State': state, 'Value': H_bar_state_aug};
+df_aug = pd.DataFrame(data=d_aug);
+
+merged_aug = US.set_index('STUSPS').join(df_aug.set_index('State'))
+merged_aug = merged_aug.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in August in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_aug = df_aug['Value'];
+vmin = col_aug.min();
+vmax = col_aug.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_aug.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for September
+H_bar_state_sep = H_bar_state[:,8];
+d_sep = {'State': state, 'Value': H_bar_state_sep};
+df_sep = pd.DataFrame(data=d_sep);
+
+merged_sep = US.set_index('STUSPS').join(df_sep.set_index('State'))
+merged_sep = merged_sep.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in September in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_sep = df_sep['Value'];
+vmin = col_sep.min();
+vmax = col_sep.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_sep.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for October
+H_bar_state_oct = H_bar_state[:,9];
+d_oct = {'State': state, 'Value': H_bar_state_oct};
+df_oct = pd.DataFrame(data=d_oct);
+
+merged_oct = US.set_index('STUSPS').join(df_oct.set_index('State'))
+merged_oct = merged_oct.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in October in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_oct = df_oct['Value'];
+vmin = col_oct.min();
+vmax = col_oct.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_oct.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for November
+H_bar_state_nov = H_bar_state[:,10];
+d_nov = {'State': state, 'Value': H_bar_state_nov};
+df_nov = pd.DataFrame(data=d_nov);
+
+merged_nov = US.set_index('STUSPS').join(df_nov.set_index('State'))
+merged_nov = merged_nov.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in November in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_nov = df_nov['Value'];
+vmin = col_nov.min();
+vmax = col_nov.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_nov.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+#Repeat by monthy daily average for December
+H_bar_state_dec = H_bar_state[:,11];
+d_dec = {'State': state, 'Value': H_bar_state_dec};
+df_dec = pd.DataFrame(data=d_dec);
+
+merged_dec = US.set_index('STUSPS').join(df_dec.set_index('State'))
+merged_dec = merged_dec.reset_index();
+
+fig, ax = plt.subplots(1, figsize=(40, 20));
+ax.axis('off');
+ax.set_title('Heat Map of Average Daily Radiation Recieved in December in MJ/m^2', fontdict={'fontsize': '40', 'fontweight' : '5'});
+color = 'Reds';
+col_dec = df_dec['Value'];
+vmin = col_dec.min();
+vmax = col_dec.max();
+sm = plt.cm.ScalarMappable(cmap=color, norm=plt.Normalize(vmin=vmin, vmax=vmax));
+sm._A = [];
+cbar = fig.colorbar(sm);
+cbar.ax.tick_params(labelsize=25);
+merged_dec.plot('Value', cmap=color, linewidth=0.8, ax=ax, edgecolor='0.8', figsize=(40,20));
+plt.xlim([-180,-60]);
+
+	
