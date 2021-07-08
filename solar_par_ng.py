@@ -11,16 +11,16 @@ import seaborn as sb
 import time
 from mpi4py import MPI
 
+#Get MPI characteristics
+comm = MPI.COMM_WORLD;
+rank = comm.Get_rank();
+size = comm.Get_size();
+
 #Start timer
 start_time = time.time();
 
 #Reading the excel data using pandasi
 data = np.array(pd.read_excel('solar_data.xlsx'));
-
-#Get MPI characteristics
-comm = MPI.COMM_WORLD;
-rank = comm.Get_rank();
-size = comm.Get_size();
 
 #Initializing the step operations by month and location
 #mon = np.linspace(1,12,12,dtype=int);
@@ -42,9 +42,7 @@ dtr = pi/180;
 area = np.array([1477953,131171,134771,294207,403466,268431,12542,5047,138887,148959,16635,144669,214945,143793,92789,211754,102269,111898,20201,25142,79883,146435,206232,178040,121531,376962,125920,178711,198974,23187,19047,314161,284332,122057,105829,177660,248608,115883,2678,77857,196350,106798,676587,212818,102279,23871,172119,140268,62259,251470])*1000000;
 
 #Initializing the storage variables
-H_o_bar_loc = np.zeros((237,12));
-H_bar_loc = H_o_bar_loc;
-H_bar_state = np.zeros((50,12));
+H_o_bar_loc = np.zeros((237,1));
 
 #Beginning calculations by month by location
 i = rank;
@@ -100,40 +98,46 @@ for j in loc:
                 a = a + 1;
 
         #Take the daily average for the month and save
-        H_o_bar_loc[j,i] = np.mean(H_o);
-
-H_bar_loc_comb = np.zeros((237,12));
-H_o_bar_loc_comb = comm.gather(H_o_bar_loc, root=0);
+        H_o_bar_loc[j] = np.mean(H_o);
 
 if rank == 0:
-    #Calculate surface radiation by location
-    H_bar_loc = np.multiply(KT,H_o_bar_loc);
+	H_o_bar_loc_comb = np.zeros((12,237));
+else:
+	H_o_bar_loc_comb = None;
 
-    #Combine the values by state
-    mon = np.linspace(1,12,12,dtype=int);
-    for k in mon:
-        p = -1;
-        for m in st:
-            n = 0;
-            p = p+1;
-            while state_raw[p] == state_raw[p+1] and p < 235:
-                p = p+1;
-                n = n+1;
-            H_bar_state[m,k-1] = np.mean(H_bar_loc[p-n:p+1,k-1])/1000000;
+H_o_bar_loc_comb = np.array(comm.gather(H_o_bar_loc,root=0));
 
-    #Sorting by state
-    state = [];
-    for q in state_raw:
-        if q not in state:
-            state.append(q);
-    state = np.transpose(state);
+if rank == 0:
+	H_o_bar_loc_comb = np.transpose(H_o_bar_loc_comb);
+	#Calculate surface radiation by location
+	H_bar_loc = np.zeros((237,12));
+	H_bar_loc = np.multiply(KT,H_o_bar_loc_comb);
+	H_bar_state = np.zeros((50,12));
+	#Combine the values by state
+	mon = np.linspace(1,12,12,dtype=int);
+	for k in mon:
+		p = -1;
+		for m in st:
+			n = 0;
+			p = p+1;
+			while state_raw[p] == state_raw[p+1] and p < 235:
+				p = p+1;
+				n = n+1;
+			H_bar_state[m,k-1] = np.mean(H_bar_loc[p-n:p+1,k-1])/1000000;
 
-    #Combine for all months and create data frame
-    H_bar_state_year = np.mean(H_bar_state, axis=1);
-    d_year = {'State': state, 'Value': H_bar_state_year};
-    df_year = pd.DataFrame(data=d_year);
-    print(df_year);
+	#Sorting by state
+	state = [];
+	for q in state_raw:
+		if q not in state:
+            		state.append(q);
+	state = np.transpose(state);
 
-    #End timer
-    end_time = time.time();
-    print("---%s seconds---" %(end_time-start_time));
+	#Combine for all months and create data frame
+	H_bar_state_year = np.mean(H_bar_state, axis=1);
+	d_year = {'State': state, 'Value': H_bar_state_year};
+	df_year = pd.DataFrame(data=d_year);
+	print(df_year);
+
+	#End timer
+	end_time = time.time();
+	print("---%s seconds---" %(end_time-start_time));

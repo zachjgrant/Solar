@@ -3,20 +3,21 @@
 import numpy as np
 #import matlibplot.pyplot as plt
 import pandas as pd
+from mpi4py import MPI
 
-data = np.array(pd.read_excel('solar_data.xlsx'));
-lat = data[:,3];
-loc = data[:,1];
+comm = MPI.COMM_WORLD;
+rank = comm.Get_rank();
+size = comm.Get_size();
 
-a = np.cos(90*np.pi/180);
+if rank == 0:
+	a = [1,2,3];
+else:
+	a = [4,5,6];
 
-b = np.array([[1,2,3],[4,5,6]]);
-c = np.array([[2,3,4],[5,6,7]]);
+b = np.zeros((2,3));
+b = comm.gather(a);
 
-d = np.multiply(b,c);
-
-e = np.concatenate((b,c),axis=0);
-
-f = e[0:2,:];
-
-print(f);
+if rank == 0:
+	b = np.transpose(b);
+	b = np.sum(b,axis=1);
+	print(b);
