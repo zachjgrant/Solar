@@ -122,6 +122,7 @@ state = np.transpose(state);
 H_bar_state_year = np.mean(H_bar_state, axis=1);
 d_year = {'State': state, 'Value': H_bar_state_year};
 df_year = pd.DataFrame(data=d_year);
+print(df_year);
 
 #End timer
 end_time = time.time();
