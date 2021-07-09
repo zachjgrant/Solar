@@ -15,9 +15,12 @@ else:
 	a = [4,5,6];
 
 b = np.zeros((2,3));
-b = comm.gather(a);
+b = comm.gather(a,root=0);
 
 if rank == 0:
+	c = [[1,4],[2,5],[3,6]];
 	b = np.transpose(b);
-	b = np.sum(b,axis=1);
+	d = np.multiply(b,c);
 	print(b);
+	print(c);
+	print(d);

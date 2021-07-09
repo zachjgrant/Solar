@@ -75,7 +75,7 @@ for i in mon:
 			day = np.linspace(305,334,30);
 			l = 30;
 		else:
-			day = np.linspace(335,366,31);
+			day = np.linspace(335,365,31);
 			l = 31;
 
 		#Calculating the radiation on a horizontal surface for each day of the month
